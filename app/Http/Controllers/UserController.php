@@ -72,10 +72,7 @@ class UserController extends Controller
             Administrateur::create(['id' => $user->id]);
         }
 
-        return response()->json([
-            'message' => 'Utilisateur créé avec succès',
-            'user' => $user,
-        ], 201);
+        return redirect ('/administrateur');
     }
 
     public function login(Request $request)
@@ -137,4 +134,21 @@ class UserController extends Controller
 
         return redirect('/connexion')->with('success', 'Déconnexion réussie.');
     }
+
+    public function yann(){
+        return view('ajout-admin');
+    }
+
+
+
+    public function listeAgents()
+{
+    // Récupérer les agents avec leurs informations utilisateur
+    $agents = Agent::with('user')->get();
+
+    return view('liste-agent', compact('agents'));
+
+}
+
+
 }

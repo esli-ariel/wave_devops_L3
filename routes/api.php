@@ -28,3 +28,8 @@ Route::post('/login', [UserController::class, 'login']);
 
 
 Route::get('/logout', [UserController::class, 'logout'])->name('logout');
+
+
+
+
+Route::post('/ajout/admin', [UserController::class, 'yann']);

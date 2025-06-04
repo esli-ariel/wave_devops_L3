@@ -49,3 +49,15 @@ Route::post('/login', [UserController::class, 'login']);
 
 
 Route::get('/logout', [UserController::class, 'logout']);
+
+
+Route::get('/ajout/admin', [UserController::class, 'yann']);
+
+
+
+// Route::get('/liste-agents', [UserController::class, 'listeAgents']);
+
+
+
+Route::get('/liste-agents', [UserController::class, 'listeAgents']);
+
