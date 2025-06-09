@@ -27,7 +27,7 @@
     <div class="col-md-3 col-lg-2 sidebar">
         <h4 class="text-center mb-4"><i class="bi bi-shield-lock"></i> Admin</h4>
         <a href="#" class="active"><i class="bi bi-house-door"></i> Tableau de bord</a>
-        <a href="/ajout/admin"><i class="bi bi-person-lines-fill"></i> Agents</a>
+        <a href="/liste-agents"><i class="bi bi-person-lines-fill"></i> Agents</a>
         <a href="/ajout/admin"><i class="bi bi-person-badge"></i> Administrateurs</a>
         <a href="#"><i class="bi bi-wallet2"></i> Comptes</a>
         <a href="/logout" class="mt-4 btn btn-logout"><i class="bi bi-box-arrow-right"></i> Déconnexion</a>

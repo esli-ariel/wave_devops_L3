@@ -11,8 +11,8 @@ class Agent extends Model
 
     protected $fillable = ['id', 'solde', 'code'];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+public function user()
+{
+    return $this->belongsTo(User::class, 'id', 'id');
+}
 }
