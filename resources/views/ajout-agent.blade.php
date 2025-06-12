@@ -104,10 +104,6 @@
             <label for="contact" class="form-label">Contact</label>
             <input type="text" name="contact" id="contact" class="form-control" required>
         </div>
-        <div class="mb-3">
-            <label for="contact" class="form-label">Code</label>
-            <input type="text" name="code" id="code" class="form-control" >
-        </div>
 
         <div class="mb-3">
     <label for="type" class="form-label">Type d'utilisateur</label>

@@ -30,10 +30,10 @@ class User extends Authenticatable
         return $this->hasOne(Client::class, 'id');
     }
 
-    public function agent()
-    {
-        return $this->hasOne(Agent::class, 'id');
-    }
+public function agent()
+{
+    return $this->hasOne(Agent::class, 'id', 'id');
+}
 
     public function administrateur()
     {

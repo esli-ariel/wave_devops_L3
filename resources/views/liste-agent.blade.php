@@ -7,6 +7,11 @@
 </head>
 <body>
 <div class="container mt-5">
+    <div class="mb-4 text-end">
+    <a href="/ajout/admin" class="btn btn-primary">
+        Ajouter un agent
+    </a>
+</div>
     <h2 class="text-center mb-4 text-primary">Liste des Agents</h2>
 
     <table class="table table-bordered table-striped">
@@ -23,12 +28,13 @@
         <tbody>
             @forelse ($agents as $agent)
                 <tr>
-                    <td>{{ $agent->user->nom }}</td>
-                    <td>{{ $agent->user->prenoms }}</td>
-                    <td>{{ $agent->user->email }}</td>
-                    <td>{{ $agent->user->contact }}</td>
-                    <td>{{ $agent->code }}</td>
-                    <td>{{ number_format($agent->solde, 0, ',', ' ') }}</td>
+<td>{{ $agent->user->nom ?? 'Non défini' }}</td>
+<td>{{ $agent->user->prenoms ?? 'Non défini' }}</td>
+<td>{{ $agent->user->email ?? 'Non défini' }}</td>
+<td>{{ $agent->user->contact ?? 'Non défini' }}</td>
+<td>{{ $agent->code }}</td>
+<td>{{ number_format($agent->solde, 0, ',', ' ') }}</td>
+
                 </tr>
             @empty
                 <tr>
