@@ -21,12 +21,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/login', [UserController::class, 'showLoginForm'])->name('login.form');
 
 
 Route::get('/connexion', [AuthController::class, 'A']);
 Route::get('/inscription', [AuthController::class, 'B']);
 
-Route::get('/administrateur', [AuthController::class, 'C']);
+Route::get('/administrateur', [UserController::class, 'C']);
 
 
 Route::get('/agent', [AuthController::class, 'D']);
@@ -45,7 +46,7 @@ Route::post('/users', [UserController::class, 'store']);
 
 
 
-Route::post('/login', [UserController::class, 'login']);
+Route::post('/login', [UserController::class, 'C']);
 
 
 Route::get('/logout', [UserController::class, 'logout']);
@@ -61,3 +62,12 @@ Route::get('/ajout/admin', [UserController::class, 'yann']);
 
 Route::get('/liste-agents', [UserController::class, 'listeAgents']);
 
+// Modifier
+Route::get('/modifier/agent/{id}', [UserController::class, 'editAgent'])->name('agent.edit');
+Route::post('/modifier/agent/{id}', [UserController::class, 'updateAgent'])->name('agent.update');
+
+// Supprimer
+Route::delete('/supprimer/agent/{id}', [UserController::class, 'deleteAgent'])->name('agent.delete');
+
+
+Route::get('/liste-utilisateurs', [UserController::class, 'listeUtilisateurs'])->name('utilisateurs.liste');

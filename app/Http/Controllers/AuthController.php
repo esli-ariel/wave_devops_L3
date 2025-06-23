@@ -8,7 +8,7 @@ class AuthController extends Controller
 {
 
     public function A (){
-        return view('login');
+        return view('connexion');
     }
 
 

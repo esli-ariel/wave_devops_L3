@@ -75,7 +75,7 @@ class UserController extends Controller
         return redirect ('/administrateur');
     }
 
-    public function login(Request $request)
+    public function C(Request $request)
     {
         $request->validate([
             'contact' => 'required|string',
@@ -149,6 +149,82 @@ class UserController extends Controller
     return view('liste-agent', compact('agents'));
 
 }
+
+// Affiche le formulaire de modification d'un agent
+public function editAgent($id)
+{
+    $agent = Agent::with('user')->findOrFail($id);
+    return view('edit-agent', compact('agent'));
+}
+
+// Enregistre les modifications
+public function updateAgent(Request $request, $id)
+{
+    // Nettoyer le solde (enlever les espaces)
+    $soldeNettoye = str_replace(' ', '', $request->input('solde'));
+
+    // Fusionner la donnée nettoyée dans la requête
+    $request->merge(['solde' => $soldeNettoye]);
+
+    // Validation améliorée : solde peut être décimal et positif
+    $request->validate([
+        'nom' => 'required|string',
+        'prenoms' => 'required|string',
+        'email' => 'required|email',
+        'contact' => 'required|string',
+        'code' => 'required|string',
+        'solde' => 'required|numeric|min:0',
+    ]);
+
+    $agent = Agent::findOrFail($id);
+    $user = $agent->user;
+
+    // Mise à jour de l'utilisateur
+    $user->update([
+        'nom' => $request->nom,
+        'prenoms' => $request->prenoms,
+        'email' => $request->email,
+        'contact' => $request->contact,
+    ]);
+
+    // Mise à jour de l'agent (code et solde)
+    $agent->update([
+        'code' => $request->code,
+        'solde' => $request->solde,
+    ]);
+
+    return redirect()->route('utilisateurs.liste')->with('success', 'Agent mis à jour avec succès.');
+}
+
+
+// Supprime un agent
+public function deleteAgent($id)
+{
+    $agent = Agent::findOrFail($id);
+    $agent->delete();
+
+    // Optionnel : supprimer aussi l'utilisateur lié
+    $agent->user()->delete();
+
+    return redirect()->route('utilisateurs.liste')->with('success', 'Agent supprimé avec succès.');
+}
+
+public function listeUtilisateurs(Request $request)
+{
+    $filtre = $request->query('filtre', 'tous'); // agents, admins ou tous
+
+    // Relations avec users
+    $agents = Agent::with('user')->get();
+    $admins = Administrateur::with('user')->get();
+
+    return view('liste-agent', compact('agents', 'admins', 'filtre'));
+}
+
+public function showLoginForm()
+{
+    return view('connexion'); // Assure-toi que le fichier connexion.blade.php existe dans /resources/views
+}
+
 
 
 }

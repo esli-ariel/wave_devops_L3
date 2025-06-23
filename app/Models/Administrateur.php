@@ -11,8 +11,9 @@ class Administrateur extends Model
 
     protected $fillable = ['id'];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+public function user()
+{
+    return $this->belongsTo(User::class, 'id', 'id');
+}
+
 }
