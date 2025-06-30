@@ -29,7 +29,7 @@
         <a href="#" class="active"><i class="bi bi-house-door"></i> Tableau de bord</a>
         <a href="/liste-utilisateurs"><i class="bi bi-person-lines-fill"></i> Utilisateurs</a>
         <!-- <a href="/ajout/admin"><i class="bi bi-person-badge"></i> Administrateurs</a> -->
-        <a href="#"><i class="bi bi-wallet2"></i> Transactions</a>
+        <a href="/transactions"><i class="bi bi-wallet2"></i> Transactions</a>
         <a href="/logout" class="mt-4 btn btn-logout"><i class="bi bi-box-arrow-right"></i> Déconnexion</a>
     </div>
 

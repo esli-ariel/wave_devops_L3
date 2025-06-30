@@ -117,7 +117,18 @@ class UserController extends Controller
                 return redirect('/agent');
 
             case 'client':
-                return redirect('/client');
+                $client = Client::find($user->id);
+                $compte = $client?->compte;
+                $solde = $compte?->solde ?? 0;
+
+                // Récupérer toutes les transactions en collection, triées
+                $transactions = Transaction::where('user_id', $user->id)
+                                ->orderBy('created_at', 'desc')
+                                ->get();
+
+                return view('client', compact('solde', 'transactions'));
+
+
 
             default:
                 Auth::logout();

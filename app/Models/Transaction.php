@@ -15,4 +15,20 @@ class Transaction extends Model
     {
         return $this->belongsTo(User::class);
     }
+    // app/Models/Transaction.php
+
+// public function client()
+// {
+//     return $this->belongsTo(Client::class, 'client_id');
+// }
+// app/Models/Transaction.php
+
+public function beneficiaire()
+{
+    return $this->belongsTo(Client::class, 'client_id'); // ou 'beneficiaire_id' si c’est ce que tu utilises
+}
+
+
+
+
 }

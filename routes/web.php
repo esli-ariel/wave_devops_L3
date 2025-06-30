@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AgentController;
+use App\Http\Controllers\TransactionController;
 
 
 
@@ -71,3 +73,17 @@ Route::delete('/supprimer/agent/{id}', [UserController::class, 'deleteAgent'])->
 
 
 Route::get('/liste-utilisateurs', [UserController::class, 'listeUtilisateurs'])->name('utilisateurs.liste');
+
+
+Route::get('/agent/send-money', [AgentController::class, 'showSendMoneyForm'])->name('agent.showSendMoneyForm');
+Route::post('/agent/send-money', [AgentController::class, 'sendMoney'])->name('agent.sendMoney');
+
+
+
+Route::get('/client/transfert', [TransactionController::class, 'showTransferForm'])->name('client.transfer.form');
+Route::post('/client/transfert', [TransactionController::class, 'transfer'])->name('client.transfer');
+
+
+
+Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+Route::get('/transactions/pdf', [TransactionController::class, 'exportPdf'])->name('transactions.pdf');

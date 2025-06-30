@@ -98,7 +98,7 @@
     <div class="col-md-3 col-lg-2 sidebar">
         <h4 class="text-center mb-4"><i class="bi bi-person"></i> Client</h4>
         <a href="#" class="active"><i class="bi bi-house-door"></i> Tableau de bord</a>
-        <a href="/depot"><i class="bi bi-arrow-down-circle"></i> Dépôt</a>
+        <a href="/client/transfert"><i class="bi bi-arrow-down-circle"></i> Dépôt</a>
         <a href="/contact"><i class="bi bi-telephone"></i> Contact</a>
         <a href="/connexion" class="mt-4 btn btn-logout"><i class="bi bi-box-arrow-right"></i> Déconnexion</a>
     </div>
@@ -108,23 +108,20 @@
         <div class="topbar mb-4">
             <h2>Bienvenue, Client</h2>
         </div>
+        @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
 
         <!-- Statistiques -->
         <div class="row g-4">
             <div class="col-md-6">
-                <div class="card card-stat p-4 d-flex flex-row align-items-center justify-content-between">
-                    <div>
-                        <div class="text-muted">Transactions</div>
-                        <div class="stat-value">240</div>
-                    </div>
-                    <div class="icon"><i class="bi bi-cash-coin"></i></div>
-                </div>
+
             </div>
             <div class="col-md-6">
                 <div class="card card-stat p-4 d-flex flex-row align-items-center justify-content-between">
                     <div>
                         <div class="text-muted">Solde</div>
-                        <div class="stat-value" id="solde">**** FCFA</div>
+                        <div class="stat-value" id="solde">{{ $solde }} FCFA</div>
                         <div class="toggle-sold" onclick="toggleSolde()">Afficher/Masquer</div>
                     </div>
                     <div class="icon"><i class="bi bi-wallet2"></i></div>
@@ -147,28 +144,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Dépôt</td>
-                            <td>50 000 FCFA</td>
-                            <td>01/06/2025</td>
-                            <td>10:15</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Retrait</td>
-                            <td>20 000 FCFA</td>
-                            <td>01/06/2025</td>
-                            <td>12:30</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Dépôt</td>
-                            <td>30 000 FCFA</td>
-                            <td>31/05/2025</td>
-                            <td>16:45</td>
-                        </tr>
-                        <!-- Ajoute d'autres lignes dynamiquement ici -->
+                        @forelse ($transactions as $transaction)
+                            <tr>
+                                <td>{{ $transaction->id }}</td>
+                                <td>{{ ucfirst($transaction->type) }}</td>
+                                <td>{{ number_format($transaction->montant, 0, ',', ' ') }} FCFA</td>
+                                <td>{{ $transaction->created_at->format('d/m/Y') }}</td>
+                                <td>{{ $transaction->created_at->format('H:i') }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center">Aucune transaction trouvée.</td>
+                            </tr>
+                        @endforelse
+
                     </tbody>
                 </table>
             </div>
@@ -179,11 +168,16 @@
 <!-- JS -->
 <script>
     let soldeVisible = false;
-    function toggleSolde() {
-        const solde = document.getElementById('solde');
-        solde.innerText = soldeVisible ? '**** FCFA' : '850 000 FCFA';
-        soldeVisible = !soldeVisible;
+function toggleSolde() {
+    const soldeElem = document.getElementById('solde');
+    if (soldeElem.textContent.includes('*')) {
+        // Afficher le solde réel
+        soldeElem.textContent = soldeElem.getAttribute('data-valeur') + ' FCFA';
+    } else {
+        // Masquer le solde
+        soldeElem.textContent = '**** FCFA';
     }
+}
 </script>
 
 </body>

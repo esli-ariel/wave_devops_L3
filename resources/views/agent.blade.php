@@ -76,6 +76,19 @@
             cursor: pointer;
             color: #0077b6;
         }
+
+        .table-container {
+            margin-top: 3rem;
+        }
+
+        .table thead {
+            background-color: #0077b6;
+            color: white;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
     </style>
 </head>
 <body>
@@ -85,9 +98,12 @@
     <div class="col-md-3 col-lg-2 sidebar">
         <h4 class="text-center mb-4"><i class="bi bi-person"></i> Agent</h4>
         <a href="#" class="active"><i class="bi bi-house-door"></i> Tableau de bord</a>
-        <a href="/depot"><i class="bi bi-arrow-down-circle"></i> Dépôt</a>
+        <a href="/agent/send-money"><i class="bi bi-arrow-down-circle"></i> Dépôt</a>
         <a href="#"><i class="bi bi-arrow-up-circle"></i> Retrait</a>
-        <a href="#" class="mt-4 btn btn-logout"><i class="bi bi-box-arrow-right"></i> Déconnexion</a>
+        @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+        <a href="/connexion" class="mt-4 btn btn-logout"><i class="bi bi-box-arrow-right"></i> Déconnexion</a>
     </div>
 
     <!-- Content -->
@@ -102,7 +118,7 @@
                 <div class="card card-stat p-4 d-flex flex-row align-items-center justify-content-between">
                     <div>
                         <div class="text-muted">Transactions</div>
-                        <div class="stat-value">240</div>
+                        <div class="stat-value">{{ $nbTransactions ?? 0 }}</div>
                     </div>
                     <div class="icon"><i class="bi bi-cash-coin"></i></div>
                 </div>
@@ -111,11 +127,49 @@
                 <div class="card card-stat p-4 d-flex flex-row align-items-center justify-content-between">
                     <div>
                         <div class="text-muted">Solde</div>
-                        <div class="stat-value" id="solde">**** FCFA</div>
+                        <div 
+                          class="stat-value" 
+                          id="solde" 
+                          data-valeur="{{ number_format($solde ?? 0, 0, ',', ' ') }}">
+                          **** FCFA
+                        </div>
                         <div class="toggle-sold" onclick="toggleSolde()">Afficher/Masquer</div>
                     </div>
                     <div class="icon"><i class="bi bi-wallet2"></i></div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Tableau des transactions -->
+        <div class="table-container">
+            <h4 class="mb-3">Liste des transactions</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Montant</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Heure</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($transactions as $transaction)
+                            <tr>
+                                <td>{{ $transaction->id }}</td>
+                                <td>{{ ucfirst($transaction->type) }}</td>
+                                <td>{{ number_format($transaction->montant, 0, ',', ' ') }} FCFA</td>
+                                <td>{{ $transaction->created_at->format('d/m/Y') }}</td>
+                                <td>{{ $transaction->created_at->format('H:i') }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center">Aucune transaction trouvée.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -132,6 +186,7 @@
 <!-- Chart.js + Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    // Exemple statique, adapte si tu veux dynamiser les données
     const ctx = document.getElementById('pieChart').getContext('2d');
     const pieChart = new Chart(ctx, {
         type: 'pie',
@@ -159,8 +214,12 @@
 
     let soldeVisible = false;
     function toggleSolde() {
-        const solde = document.getElementById('solde');
-        solde.innerText = soldeVisible ? '**** FCFA' : '850 000 FCFA';
+        const soldeElem = document.getElementById('solde');
+        if (soldeVisible) {
+            soldeElem.textContent = '**** FCFA';
+        } else {
+            soldeElem.textContent = soldeElem.getAttribute('data-valeur') + ' FCFA';
+        }
         soldeVisible = !soldeVisible;
     }
 </script>

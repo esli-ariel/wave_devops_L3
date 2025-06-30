@@ -3,33 +3,28 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AgentController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\AuthController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+// Authentification
+Route::post('/register', [UserController::class, 'store']); // Inscription
+Route::post('/login', [UserController::class, 'C']);        // Connexion
+Route::post('/logout', [UserController::class, 'logout']);  // Déconnexion
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// === CLIENT ROUTES ===
+Route::get('/client/solde', [AuthController::class, 'F']); // Voir solde client
+Route::post('/client/transfert', [TransactionController::class, 'transfer']); // Transfert client → client
+Route::get('/client/transactions', [TransactionController::class, 'index']);  // Historique client
 
+// === AGENT ROUTES ===
+Route::get('/agent/solde', [AuthController::class, 'D']); // Voir solde agent
+Route::post('/agent/send-money', [AgentController::class, 'sendMoney']); // Transfert agent → client
+Route::get('/agent/transactions', [TransactionController::class, 'index']); // Historique agent
 
-Route::post('/users', [UserController::class, 'store']);
-
-
-
-Route::post('/login', [UserController::class, 'login']);
-
-
-Route::get('/logout', [UserController::class, 'logout'])->name('logout');
-
-
-
-
-Route::post('/ajout/admin', [UserController::class, 'yann']);
+// === ADMIN ROUTES ===
+Route::get('/admin/dashboard', [UserController::class, 'C']); // Dashboard admin
+Route::get('/admin/users', [UserController::class, 'listeUtilisateurs']); // Liste utilisateurs
+Route::get('/admin/agents', [UserController::class, 'listeAgents']); // Liste agents
+Route::get('/admin/transactions', [TransactionController::class, 'index']); // Historique complet
+Route::get('/admin/transactions/pdf', [TransactionController::class, 'exportPdf']); // Export PDF
