@@ -26,7 +26,7 @@ Route::get('/', function () {
 Route::get('/login', [UserController::class, 'showLoginForm'])->name('login.form');
 
 
-Route::get('/connexion', [AuthController::class, 'A']);
+// Route::get('/connexion', [AuthController::class, 'A']);
 Route::get('/inscription', [AuthController::class, 'B']);
 
 Route::get('/administrateur', [UserController::class, 'C']);
