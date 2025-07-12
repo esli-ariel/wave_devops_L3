@@ -25,7 +25,7 @@ class UserController extends Controller
             'prenoms' => 'required|string',
             'email' => 'required|email|unique:users,email',
             'contact' => 'required|string|unique:users,contact',
-            'password' => 'required|string|min:6',
+            'password' => 'required|string|min:6|confirmed',
             'type' => 'required|in:client,agent,admin',
             'code' => 'required_if:type,agent|unique:agents,code',
         ]);
@@ -48,12 +48,10 @@ class UserController extends Controller
         if ($request->type === 'client') {
             $client = Client::create(['id' => $user->id]);
 
-            // Génération du numéro de compte unique
             do {
                 $numeroCompte = 'COMPTE-' . strtoupper(Str::random(10));
             } while (Compte::where('numero', $numeroCompte)->exists());
 
-            // Création du compte
             Compte::create([
                 'numero' => $numeroCompte,
                 'solde' => 0,
@@ -73,7 +71,6 @@ class UserController extends Controller
         }
 
         return redirect('/inscription')->with('success', 'Compte créé avec succès. Vous pouvez vous connecter.');
-
     }
 
     public function C(Request $request)
@@ -91,45 +88,20 @@ class UserController extends Controller
 
         Auth::login($user);
 
-        // Stocker les infos dans la session
         session([
             'nom' => $user->nom,
             'prenoms' => $user->prenoms
         ]);
 
-        // Redirection selon le type
         switch ($user->type) {
             case 'admin':
-                $nbClient = Client::count();
-                $nbAgents = Agent::count();
-                $nbAdmins = Administrateur::count();
-                $nbTransactions = Transaction::count();
-
-                $dataChart = [
-                    $nbClient,
-                    $nbAgents,
-                    $nbAdmins,
-                    $nbTransactions,
-                ];
-
-                return view('administrateur', compact('nbClient', 'nbAgents', 'nbAdmins', 'nbTransactions', 'dataChart'));
+                return redirect()->route('administrateur.dashboard');
 
             case 'agent':
                 return redirect('/agent');
 
             case 'client':
-                $client = Client::find($user->id);
-                $compte = $client?->compte;
-                $solde = $compte?->solde ?? 0;
-
-                // Récupérer toutes les transactions en collection, triées
-                $transactions = Transaction::where('user_id', $user->id)
-                                ->orderBy('created_at', 'desc')
-                                ->get();
-
-                return view('client', compact('solde', 'transactions'));
-
-
+                return redirect('/client');
 
             default:
                 Auth::logout();
@@ -137,106 +109,103 @@ class UserController extends Controller
         }
     }
 
+    public function showAdminDashboard()
+    {
+        $nbClient = Client::count();
+        $nbAgents = Agent::count();
+        $nbAdmins = Administrateur::count();
+        $nbTransactions = Transaction::count();
+
+        $dataChart = [
+            $nbClient,
+            $nbAgents,
+            $nbAdmins,
+            $nbTransactions,
+        ];
+
+        return view('administrateur', compact('nbClient', 'nbAgents', 'nbAdmins', 'nbTransactions', 'dataChart'));
+    }
+
     public function logout(Request $request)
     {
-        Auth::logout(); // Déconnexion de l'utilisateur
+        Auth::logout();
 
-        $request->session()->invalidate(); // Invalide la session
-        $request->session()->regenerateToken(); // Regénère le token CSRF
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return redirect('/connexion')->with('success', 'Déconnexion réussie.');
     }
 
-    public function yann(){
+    public function yann()
+    {
         return view('ajout-admin');
     }
 
-
-
     public function listeAgents()
-{
-    // Récupérer les agents avec leurs informations utilisateur
-    $agents = Agent::with('user')->get();
+    {
+        $agents = Agent::with('user')->get();
+        return view('liste-agent', compact('agents'));
+    }
 
-    return view('liste-agent', compact('agents'));
+    public function editAgent($id)
+    {
+        $agent = Agent::with('user')->findOrFail($id);
+        return view('edit-agent', compact('agent'));
+    }
 
-}
+    public function updateAgent(Request $request, $id)
+    {
+        $soldeNettoye = str_replace(' ', '', $request->input('solde'));
+        $request->merge(['solde' => $soldeNettoye]);
 
-// Affiche le formulaire de modification d'un agent
-public function editAgent($id)
-{
-    $agent = Agent::with('user')->findOrFail($id);
-    return view('edit-agent', compact('agent'));
-}
+        $request->validate([
+            'nom' => 'required|string',
+            'prenoms' => 'required|string',
+            'email' => 'required|email',
+            'contact' => 'required|string',
+            'code' => 'required|string',
+            'solde' => 'required|numeric|min:0',
+        ]);
 
-// Enregistre les modifications
-public function updateAgent(Request $request, $id)
-{
-    // Nettoyer le solde (enlever les espaces)
-    $soldeNettoye = str_replace(' ', '', $request->input('solde'));
+        $agent = Agent::findOrFail($id);
+        $user = $agent->user;
 
-    // Fusionner la donnée nettoyée dans la requête
-    $request->merge(['solde' => $soldeNettoye]);
+        $user->update([
+            'nom' => $request->nom,
+            'prenoms' => $request->prenoms,
+            'email' => $request->email,
+            'contact' => $request->contact,
+        ]);
 
-    // Validation améliorée : solde peut être décimal et positif
-    $request->validate([
-        'nom' => 'required|string',
-        'prenoms' => 'required|string',
-        'email' => 'required|email',
-        'contact' => 'required|string',
-        'code' => 'required|string',
-        'solde' => 'required|numeric|min:0',
-    ]);
+        $agent->update([
+            'code' => $request->code,
+            'solde' => $request->solde,
+        ]);
 
-    $agent = Agent::findOrFail($id);
-    $user = $agent->user;
+        return redirect()->route('utilisateurs.liste')->with('success', 'Agent mis à jour avec succès.');
+    }
 
-    // Mise à jour de l'utilisateur
-    $user->update([
-        'nom' => $request->nom,
-        'prenoms' => $request->prenoms,
-        'email' => $request->email,
-        'contact' => $request->contact,
-    ]);
+    public function deleteAgent($id)
+    {
+        $agent = Agent::findOrFail($id);
+        $agent->user()->delete();
+        $agent->delete();
 
-    // Mise à jour de l'agent (code et solde)
-    $agent->update([
-        'code' => $request->code,
-        'solde' => $request->solde,
-    ]);
+        return redirect()->route('utilisateurs.liste')->with('success', 'Agent supprimé avec succès.');
+    }
 
-    return redirect()->route('utilisateurs.liste')->with('success', 'Agent mis à jour avec succès.');
-}
+    public function listeUtilisateurs(Request $request)
+    {
+        $filtre = $request->query('filtre', 'tous');
 
+        $agents = Agent::with('user')->get();
+        $admins = Administrateur::with('user')->get();
 
-// Supprime un agent
-public function deleteAgent($id)
-{
-    $agent = Agent::findOrFail($id);
-    $agent->delete();
+        return view('liste-agent', compact('agents', 'admins', 'filtre'));
+    }
 
-    // Optionnel : supprimer aussi l'utilisateur lié
-    $agent->user()->delete();
-
-    return redirect()->route('utilisateurs.liste')->with('success', 'Agent supprimé avec succès.');
-}
-
-public function listeUtilisateurs(Request $request)
-{
-    $filtre = $request->query('filtre', 'tous'); // agents, admins ou tous
-
-    // Relations avec users
-    $agents = Agent::with('user')->get();
-    $admins = Administrateur::with('user')->get();
-
-    return view('liste-agent', compact('agents', 'admins', 'filtre'));
-}
-
-public function showLoginForm()
-{
-    return view('connexion'); // Assure-toi que le fichier connexion.blade.php existe dans /resources/views
-}
-
-
-
+    public function showLoginForm()
+    {
+        return view('connexion');
+    }
 }
