@@ -70,7 +70,7 @@ class UserController extends Controller
             Administrateur::create(['id' => $user->id]);
         }
 
-        return redirect('/inscription')->with('success', 'Compte créé avec succès. Vous pouvez vous connecter.');
+        return redirect('/')->with('success', 'Compte créé avec succès. Vous pouvez vous connecter.');
     }
 
     public function C(Request $request)
@@ -133,7 +133,7 @@ class UserController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/connexion')->with('success', 'Déconnexion réussie.');
+        return redirect('/')->with('success', 'Déconnexion réussie.');
     }
 
     public function yann()
