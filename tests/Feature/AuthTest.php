@@ -50,7 +50,7 @@ class AuthTest extends TestCase
             'type' => 'client',
         ]);
 
-        $response = $this->post('/login', [
+        $response = $this->post('/connexion', [
             'contact' => '0707070707',
             'password' => 'secret123',
         ]);
