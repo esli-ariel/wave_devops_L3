@@ -4,7 +4,11 @@ on:
   push:
     branches:
       - main
+      - nouveau
   pull_request:
+    branches:
+      - main
+      - nouveau
 
 jobs:
   laravel-tests:
