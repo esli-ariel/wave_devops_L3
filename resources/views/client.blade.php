@@ -100,7 +100,7 @@
         <a href="#" class="active"><i class="bi bi-house-door"></i> Tableau de bord</a>
         <a href="/client/transfert"><i class="bi bi-arrow-down-circle"></i> Dépôt</a>
         <a href="/contact"><i class="bi bi-telephone"></i> Contact</a>
-        <a href="/connexion" class="mt-4 btn btn-logout"><i class="bi bi-box-arrow-right"></i> Déconnexion</a>
+        <a href="/" class="mt-4 btn btn-logout"><i class="bi bi-box-arrow-right"></i> Déconnexion</a>
     </div>
 
     <!-- Content -->

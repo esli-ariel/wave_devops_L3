@@ -8,6 +8,7 @@
     <!-- Bootstrap + Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         body {
@@ -82,8 +83,9 @@
         <p class="text-muted mb-4">Wave Mobile Money</p>
     </div>
 
-    <form method="POST" action="/connexion">
+    <form method="POST" action="/users">
         @csrf
+        <input type="hidden" name="type" value="client">
 
         <div class="mb-3">
             <label for="nom" class="form-label">Nom</label>
@@ -150,6 +152,22 @@
         }
     }
 </script>
+
+@if(session('success'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Inscription réussie !',
+        text: '{{ session('success') }}',
+        confirmButtonText: 'Se connecter',
+        confirmButtonColor: '#00b4d8'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "/connexion";
+        }
+    });
+</script>
+@endif
 
 </body>
 </html>

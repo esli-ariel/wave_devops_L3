@@ -72,7 +72,8 @@ class UserController extends Controller
             Administrateur::create(['id' => $user->id]);
         }
 
-        return redirect ('/administrateur');
+        return redirect('/inscription')->with('success', 'Compte créé avec succès. Vous pouvez vous connecter.');
+
     }
 
     public function C(Request $request)
