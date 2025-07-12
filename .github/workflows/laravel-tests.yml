@@ -6,9 +6,6 @@ on:
       - main
       - nouveau
   pull_request:
-    branches:
-      - main
-      - nouveau
 
 jobs:
   laravel-tests:
@@ -42,8 +39,10 @@ jobs:
     - name: Install Composer dependencies
       run: composer install --no-progress --prefer-dist --no-interaction
 
-    - name: Copy .env.testing
-      run: cp .env.example .env.testing
+    - name: Copy .env files
+      run: |
+        cp .env.example .env
+        cp .env.example .env.testing
 
     - name: Configure .env.testing
       run: |
