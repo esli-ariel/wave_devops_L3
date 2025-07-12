@@ -53,8 +53,10 @@ jobs:
         sed -i 's/DB_USERNAME=.*/DB_USERNAME=postgres/' .env.testing
         sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=29122003/' .env.testing
 
-    - name: Generate application key
-      run: php artisan key:generate
+    - name: Generate application keys
+      run: |
+        php artisan key:generate
+        php artisan key:generate --env=testing
 
     - name: Run migrations
       run: php artisan migrate --env=testing --no-interaction

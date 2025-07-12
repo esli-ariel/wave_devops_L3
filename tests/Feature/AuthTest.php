@@ -8,7 +8,7 @@ use App\Models\User;
 
 class AuthTest extends TestCase
 {
-    use RefreshDatabase; // Reset la BDD à chaque test
+    use RefreshDatabase;
 
     public function test_registration()
     {
@@ -22,7 +22,7 @@ class AuthTest extends TestCase
             'type' => 'client',
         ]);
 
-        $response->assertRedirect('/administrateur'); // selon ton code
+        $response->assertRedirect('/administrateur');
 
         $this->assertDatabaseHas('users', [
             'email' => 'jean.dupont@example.com',
@@ -33,10 +33,12 @@ class AuthTest extends TestCase
 
     public function test_login()
     {
-        // Créer un utilisateur manuellement
         $user = User::factory()->create([
+            'nom' => 'Dupont',
+            'prenoms' => 'Jean',
             'contact' => '0707070707',
             'password' => bcrypt('secret123'),
+            'type' => 'client',
         ]);
 
         $response = $this->post('/login', [
@@ -44,9 +46,7 @@ class AuthTest extends TestCase
             'password' => 'secret123',
         ]);
 
-        // Selon ta logique, ça redirige où ?
         $response->assertStatus(302);
         $response->assertSessionDoesntHaveErrors();
-        // Par exemple vers administrateur
     }
 }
