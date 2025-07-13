@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: wave-laravel-app
+    env: php
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: |
+      composer install --no-dev --optimize-autoloader
+      npm install
+      npm run build
+      php artisan migrate --force
+    startCommand: |
+      php artisan serve --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: 'false'
+      - key: APP_KEY
+        fromSecret: APP_KEY_SECRET
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromSecret: DB_HOST_SECRET
+      - key: DB_PORT
+        fromSecret: DB_PORT_SECRET
+      - key: DB_DATABASE
+        fromSecret: DB_DATABASE_SECRET
+      - key: DB_USERNAME
+        fromSecret: DB_USERNAME_SECRET
+      - key: DB_PASSWORD
+        fromSecret: DB_PASSWORD_SECRET
+      - key: APP_URL
+        value: https://wave-devops-l3.onrender.com
