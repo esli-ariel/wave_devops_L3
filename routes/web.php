@@ -90,15 +90,23 @@ Route::get('/transactions/pdf', [TransactionController::class, 'exportPdf'])->na
 
 
 
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 
 Route::get('/run-migrations', function () {
-    if (request('token') !== env('MIGRATION_TOKEN')) {
-        abort(403);
-    }
+    try {
+        if (request('token') !== env('MIGRATION_TOKEN')) {
+            abort(403, 'Token invalide');
+        }
 
-    Artisan::call('migrate', ['--force' => true]);
-    return 'Migrations exécutées.';
+        Artisan::call('migrate', ['--force' => true]);
+        return 'Migrations exécutées.';
+    } catch (\Throwable $e) {
+        return response()->json([
+            'message' => 'Erreur pendant la migration',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
 });
+
 
