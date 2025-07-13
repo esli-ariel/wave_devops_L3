@@ -95,7 +95,7 @@ class UserController extends Controller
 
         switch ($user->type) {
             case 'admin':
-                return redirect()->route('administrateur.dashboard');
+                return redirect('/administrateur')->route('administrateur.dashboard');
 
             case 'agent':
                 return redirect('/agent');
