@@ -87,3 +87,23 @@ Route::post('/client/transfert', [TransactionController::class, 'transfer'])->na
 
 Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
 Route::get('/transactions/pdf', [TransactionController::class, 'exportPdf'])->name('transactions.pdf');
+
+
+
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Http\Request;
+
+Route::get('/run-migrations', function (Request $request) {
+    $token = $request->query('token');
+
+    // Change ce token ici, met un truc compliqué et secret
+    $secretToken = env('MIGRATION_SECRET_TOKEN', 'monSuperToken123!');
+
+    if ($token !== $secretToken) {
+        abort(403, 'Unauthorized');
+    }
+
+    Artisan::call('migrate', ['--force' => true]);
+
+    return 'Migrations exécutées avec succès !';
+});
