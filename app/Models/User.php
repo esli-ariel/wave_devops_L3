@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens; // <-- ajoute cette ligne
 
 class User extends Authenticatable
 {
-    use  HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable; // <-- ajoute HasApiTokens ici
 
     protected $fillable = [
         'nom',
@@ -29,10 +30,10 @@ class User extends Authenticatable
         return $this->hasOne(Client::class, 'id');
     }
 
-public function agent()
-{
-    return $this->hasOne(Agent::class, 'id', 'id');
-}
+    public function agent()
+    {
+        return $this->hasOne(Agent::class, 'id', 'id');
+    }
 
     public function administrateur()
     {
