@@ -1,49 +1,29 @@
-# Utiliser PHP 8.2 avec Apache
+# Utiliser une image PHP avec Apache
 FROM php:8.2-apache
 
-# Installation des dépendances système
+# Installer les dépendances système et les extensions PHP requises
 RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
+    libpq-dev \
     unzip \
-    nodejs \
-    npm
+    zip \
+    git \
+    && docker-php-ext-install pdo pdo_pgsql
 
-# Nettoyer le cache apt
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+# Activer mod_rewrite pour Laravel
+RUN a2enmod rewrite
 
-# Installer les extensions PHP nécessaires
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
-
-# Installer Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Copier le code source dans le conteneur
+COPY . /var/www/html
 
 # Définir le répertoire de travail
 WORKDIR /var/www/html
 
-# Copier les fichiers du projet
-COPY . .
+# Définir les droits nécessaires
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Installer les dépendances PHP
-RUN composer install --no-interaction --no-dev --optimize-autoloader
-
-# Installer les dépendances Node.js
-RUN npm install && npm run build
-
-# Configurer les permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage
-
-# Configurer Apache
-RUN a2enmod rewrite
-COPY apache.conf /etc/apache2/sites-available/000-default.conf
+# Installer Composer (déjà intégré dans l'image Render)
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN composer install --no-dev --optimize-autoloader
 
 # Exposer le port 80
 EXPOSE 80
-
-# Script de démarrage
-CMD ["apache2-foreground"]
