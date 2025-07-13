@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+// use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AgentController;
@@ -91,19 +91,14 @@ Route::get('/transactions/pdf', [TransactionController::class, 'exportPdf'])->na
 
 
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
-Route::get('/run-migrations', function (Request $request) {
-    $token = $request->query('token');
-
-    // Change ce token ici, met un truc compliqué et secret
-    $secretToken = env('MIGRATION_SECRET_TOKEN', 'monSuperToken123!');
-
-    if ($token !== $secretToken) {
-        abort(403, 'Unauthorized');
+Route::get('/run-migrations', function () {
+    if (request('token') !== env('MIGRATION_TOKEN')) {
+        abort(403);
     }
 
     Artisan::call('migrate', ['--force' => true]);
-
-    return 'Migrations exécutées avec succès !';
+    return 'Migrations exécutées.';
 });
+
